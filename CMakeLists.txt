@@ -93,6 +93,7 @@ target_link_libraries(roco2 INTERFACE Nitro::log)
 
 macro(Roco2Configuration CONF )
     add_executable(roco2_${CONF} experiment.cpp)
+    message("Adding executable roco2_${CONF}")
 
     target_link_libraries(
         roco2_${CONF}
