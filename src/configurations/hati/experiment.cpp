@@ -1,7 +1,6 @@
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/c_state_limit.hpp>
-#include <roco2/cpu/ddcm.hpp>
 #include <roco2/cpu/frequency.hpp>
 #include <roco2/cpu/shell.hpp>
 #include <roco2/cpu/topology.hpp>
