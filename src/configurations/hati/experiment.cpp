@@ -1,7 +1,7 @@
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/c_state_limit.hpp>
-#include <roco2/cpu/frequency.hpp>
+// #include <roco2/cpu/frequency.hpp>
 #include <roco2/cpu/shell.hpp>
 #include <roco2/cpu/topology.hpp>
 
@@ -49,7 +49,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::mulpd mulpd;
     roco2::kernels::addpd addpd;
 
-    roco2::cpu::frequency freqctl;
+    // roco2::cpu::frequency freqctl;
     roco2::cpu::shell cstatectl("", "elab cstate enable", "elab cstate enable");
 
     roco2::memory::numa_bind_local nbl;
@@ -58,7 +58,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     auto experiment_duration = std::chrono::milliseconds(10000);
 
-    auto freq_list = std::vector<unsigned>{ 3800, 2000, 800 };
+    // auto freq_list = std::vector<unsigned>{ 3800, 2000, 800 };
 
     auto on_list = sub_block_pattern(2, 112) >> block_pattern(2, false, triangle_shape::upper) >>
                    stride_pattern(2, 112);
@@ -91,7 +91,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     // ------ EDIT TASK PLAN BELOW THIS LINE ------
 
-    setting([&freqctl, &freq_list]() { freqctl.change(freq_list[0]); });
+    // setting([&freqctl, &freq_list]() { freqctl.change(freq_list[0]); });
 
     for (const auto& cstate_setting : cstate_list)
     {
@@ -101,25 +101,26 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         experiment(idle, roco2::experiments::cpu_sets::all_cpus());
 
         // for each frequency
-        for (const auto& freq : freq_list)
-        {
-            setting([&freqctl, freq]() { freqctl.change(freq); });
+        // for (const auto& freq : freq_list)
+        // {
+        //     setting([&freqctl, freq]() { freqctl.change(freq); });
 
-            for (const auto& on : on_list)
-            {
-                experiment(bw, on);
-                experiment(cp, on);
-                // experiment(sinus, on);
-                experiment(mem_rd, on);
-                experiment(mem_cpy, on);
-                experiment(mem_wrt, on);
-                experiment(addpd, on);
-                experiment(mulpd, on);
-                experiment(squareroot, on);
-                experiment(mm, on);
-                // experiment(fs, on);
-            }
+        for (const auto& on : on_list)
+        {
+            experiment(bw, on);
+            experiment(cp, on);
+            // experiment(sinus, on);
+            experiment(mem_rd, on);
+            experiment(mem_cpy, on);
+            experiment(mem_wrt, on);
+            experiment(addpd, on);
+            experiment(mulpd, on);
+            experiment(squareroot, on);
+            experiment(mm, on);
+            // experiment(fs, on);
         }
+
+        // }
     }
 
     // ------ EDIT TASK PLAN ABOVE THIS LINE ------
