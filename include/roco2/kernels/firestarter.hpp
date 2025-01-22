@@ -5,6 +5,7 @@
 #include <roco2/kernels/base_kernel.hpp>
 
 #include <firestarter/Payload/CompiledPayload.hpp>
+#include <firestarter/Payload/Payload.hpp>
 
 namespace roco2
 {
