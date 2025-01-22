@@ -70,12 +70,7 @@ else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
 
-if (USE_FIRESTARTER)
-    include(cmake/BuildFirestarter.cmake)
-    message(STATUS "Building WITH firestarter.")
-else()
-    message(STATUS "Building WITHOUT firestarter.")
-endif()
+add_subdirectory(lib/FIRESTARTER)
 
 target_include_directories(roco2 INTERFACE include)
 
@@ -96,7 +91,6 @@ macro(Roco2Configuration CONF )
 
     target_link_libraries(
         roco2_${CONF}
-        roco2_main
         roco2_core
     )
 
