@@ -58,6 +58,8 @@ namespace kernels
 #endif
         /// The first threads starts the function that terminated firestarter after the time has
         /// been elapsed.
+        /// TODO: This may cause problem when we do not include the thread with id 0 in the
+        /// experiment on_list.
         std::thread cntrl_thread;
         if (cpu::info::current_thread() == 0)
         {
