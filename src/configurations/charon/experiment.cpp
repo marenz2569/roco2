@@ -34,7 +34,8 @@
 
 using namespace roco2::experiments::patterns;
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path)
 {
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
@@ -132,5 +133,11 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 #pragma omp barrier
 
         plan.execute();
+    }
+
+#pragma omp barrier
+#pragma omp master
+    {
+        plan.save_csv(csv_output_path);
     }
 }

@@ -10,7 +10,8 @@
 
 #include <omp.h>
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only);
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path);
 
 int main(int argc, char** argv)
 {
@@ -19,6 +20,7 @@ int main(int argc, char** argv)
     roco2::log::info() << "Starting initialize at: " << starting_point.time_since_epoch().count();
 
     bool eta_only;
+    std::string csv_output_path;
 
     // first assumption:
     // GOMP_CPU_AFFINITY or respectivly KMP_AFFINITY was set to a sane value.
@@ -28,6 +30,8 @@ int main(int argc, char** argv)
     parser.toggle("help").short_name("h");
     parser.toggle("debug").short_name("d");
     parser.toggle("eta_only").short_name("e");
+    parser.option("csv-output", "The file name of the CSV that contains the collected metics.")
+        .default_value("results.csv");
 
     try
     {
@@ -51,6 +55,8 @@ int main(int argc, char** argv)
         }
 
         eta_only = options.given("eta_only");
+
+        csv_output_path = options.get("csv-output");
     }
     catch (nitro::broken_options::parsing_error& e)
     {
@@ -71,11 +77,11 @@ int main(int argc, char** argv)
     bool exception_happend = false;
 
 #pragma omp parallel default(shared) shared(starting_point, exception_happend)                     \
-    firstprivate(eta_only)
+    firstprivate(eta_only, csv_output_path)
     {
         try
         {
-            run_experiments(starting_point, eta_only);
+            run_experiments(starting_point, eta_only, csv_output_path);
         }
         catch (std::exception& e)
         {

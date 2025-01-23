@@ -36,7 +36,8 @@
 
 using namespace roco2::experiments::patterns;
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path)
 {
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
@@ -60,12 +61,10 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     auto experiment_duration = std::chrono::milliseconds(10000);
 
     auto freq_list = std::vector<unsigned>{ 3001, 3000, 2100, 1200 };
-   // auto freq_list = std::vector<unsigned>{ 3001 };
+    // auto freq_list = std::vector<unsigned>{ 3001 };
 
-    auto on_list = sub_block_pattern(2, 18)
-                   >> block_pattern(2, false, triangle_shape::upper)
-                   >> stride_pattern(2, 18)
-                   ;
+    auto on_list = sub_block_pattern(2, 18) >> block_pattern(2, false, triangle_shape::upper) >>
+                   stride_pattern(2, 18);
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
@@ -83,9 +82,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     roco2::experiments::const_lenght exp(experiment_startpoint, experiment_duration);
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task(exp, kernel, on));
-    };
+    auto experiment = [&](auto& kernel, const auto& on)
+    { plan.push_back(roco2::task::experiment_task(exp, kernel, on)); };
 
     auto setting = [&](auto lambda) { plan.push_back(roco2::task::make_lambda_task(lambda)); };
 
@@ -102,21 +100,21 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
         for (const auto& on : on_list)
         {
-                experiment(bw, on);
-                experiment(cp, on);
-                experiment(sinus, on);
-                experiment(mem_rd, on);
-                experiment(mem_cpy, on);
-                experiment(mem_wrt, on);
-                experiment(addpd, on);
-                experiment(mulpd, on);
-                experiment(squareroot, on);
-                experiment(mm, on);
-                experiment(fs, on);
+            experiment(bw, on);
+            experiment(cp, on);
+            experiment(sinus, on);
+            experiment(mem_rd, on);
+            experiment(mem_cpy, on);
+            experiment(mem_wrt, on);
+            experiment(addpd, on);
+            experiment(mulpd, on);
+            experiment(squareroot, on);
+            experiment(mm, on);
+            experiment(fs, on);
         }
     }
 
-// ------ EDIT TASK PLAN ABOVE THIS LINE ------
+    // ------ EDIT TASK PLAN ABOVE THIS LINE ------
 
 #pragma omp master
     {
@@ -129,5 +127,11 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 #pragma omp barrier
 
         plan.execute();
+    }
+
+#pragma omp barrier
+#pragma omp master
+    {
+        plan.save_csv(csv_output_path);
     }
 }

@@ -90,6 +90,11 @@ namespace task
             executed_ = true;
         }
 
+        void save_csv(const std::string& outpath) const
+        {
+            roco2::metrics::storage::instance().save_csv(outpath);
+        }
+
     private:
         std::unique_ptr<::firestarter::measurement::MeasurementWorker> measurement_worker;
         bool executed_ = false;
