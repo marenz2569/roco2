@@ -41,7 +41,7 @@ namespace kernels
         auto& memory = roco2::thread_local_memory().firestarter_memory;
         memory = ::firestarter::LoadWorkerMemory::allocate(buffersize_mem);
 
-        compiled_payload_ptr->init(memory->getMemoryAddress(), buffersize_mem);
+        compiled_payload_ptr->init(memory->getMemoryAddress(), buffersize_mem / sizeof(uint64_t));
     }
 
     void firestarter::stop_kernel(roco2::chrono::time_point until,
