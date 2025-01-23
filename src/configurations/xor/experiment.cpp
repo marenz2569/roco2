@@ -32,7 +32,8 @@ std::uint64_t operand(int hw)
     return op >> (64 - hw);
 }
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path)
 {
     roco2::kernels::vxor vxor;
     roco2::kernels::idle idle;
@@ -73,9 +74,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     roco2::experiments::const_lenght exp(experiment_startpoint, experiment_duration);
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task(exp, kernel, on));
-    };
+    auto experiment = [&](auto& kernel, const auto& on)
+    { plan.push_back(roco2::task::experiment_task(exp, kernel, on)); };
 
     auto setting = [&](auto lambda) { plan.push_back(roco2::task::make_lambda_task(lambda)); };
 
@@ -122,5 +122,11 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 #pragma omp barrier
 
         plan.execute();
+    }
+
+#pragma omp barrier
+#pragma omp master
+    {
+        plan.save_csv(csv_output_path);
     }
 }

@@ -2,6 +2,7 @@
 
 #include "roco2/metrics/meta.hpp"
 
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -79,13 +80,15 @@ namespace metrics
             metric_entries.emplace_back(entry);
         }
 
-        void print_last()
+        /// Print the csv with one line containing only the latest metrics
+        void print_last() const
         {
             std::stringstream ss;
             for (const auto& name : metric_names)
             {
                 ss << name << ',';
             }
+            ss.seekp(-1, std::ios_base::end);
             ss << '\n';
 
             const auto back_iterator = metric_entries.back();
@@ -94,8 +97,50 @@ namespace metrics
             {
                 ss << value << ',';
             }
+            ss.seekp(-1, std::ios_base::end);
+            ss << ' ';
 
             log::info() << ss.str();
+        }
+
+        /// Save all the stored metrics to a csv file.
+        /// \arg outpath The path to which the csv is saved.
+        void save_csv(const std::string& outpath) const
+        {
+            std::stringstream ss;
+            for (const auto& name : metric_names)
+            {
+                ss << name << ',';
+            }
+            ss.seekp(-1, std::ios_base::end);
+            ss << '\n';
+
+            for (const auto& entry : metric_entries)
+            {
+                for (const auto& value : entry.metric_values)
+                {
+                    ss << value << ',';
+                }
+                ss.seekp(-1, std::ios_base::end);
+                ss << '\n';
+            }
+
+            ss.seekp(-1, std::ios_base::end);
+            ss << ' ';
+
+            log::info() << "Saving measurement data to " << outpath;
+
+            std::ofstream fp(outpath);
+
+            if (fp.bad())
+            {
+                log::error() << "Could not open " << outpath;
+                return;
+            }
+
+            fp << ss.str();
+
+            fp.close();
         }
     };
 } // namespace metrics
