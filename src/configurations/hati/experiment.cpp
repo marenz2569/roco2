@@ -19,7 +19,6 @@
 #include <roco2/kernels/firestarter.hpp>
 #include <roco2/kernels/high_low.hpp>
 #include <roco2/kernels/idle.hpp>
-#include <roco2/kernels/matmul.hpp>
 #include <roco2/kernels/memory_copy.hpp>
 #include <roco2/kernels/memory_read.hpp>
 #include <roco2/kernels/memory_write.hpp>
@@ -45,7 +44,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::memory_copy<> mem_cpy;
     roco2::kernels::memory_write<> mem_wrt;
     roco2::kernels::sqrt squareroot;
-    roco2::kernels::matmul mm;
     roco2::kernels::firestarter fs;
     roco2::kernels::idle idle;
     roco2::kernels::mulpd mulpd;
@@ -118,7 +116,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
             experiment(addpd, on);
             experiment(mulpd, on);
             experiment(squareroot, on);
-            experiment(mm, on);
             experiment(fs, on);
         }
 
