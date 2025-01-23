@@ -28,12 +28,17 @@ namespace task
             exp_.run(kernel_, on_);
         }
 
+        auto tag() -> auto
+        {
+            return kernel_.tag();
+        }
+
     private:
         roco2::experiments::base& exp_;
         roco2::kernels::base_kernel& kernel_;
         roco2::experiments::cpu_sets::cpu_set on_;
     };
-}
-}
+} // namespace task
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_TASK_EXPERIMENT_TASK_HPP
