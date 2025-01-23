@@ -17,6 +17,22 @@ namespace task
     class task_plan
     {
     public:
+        task_plan()
+        {
+#pragma omp master
+            {
+                // TODO: make these variables configurable
+                measurement_worker =
+                    std::make_unique<::firestarter::measurement::MeasurementWorker>(
+                        /*UpdateInterval=*/std::chrono::milliseconds(10), omp_get_num_threads(),
+                        /*MetricDylibsNames=*/std::vector<std::string>(),
+                        /*StdinMetricsNames=*/std::vector<std::string>());
+
+                const auto metrics = measurement_worker->metricNames();
+                measurement_worker->initMetrics(metrics);
+            }
+        }
+
         roco2::chrono::duration eta() const
         {
             return eta_;
@@ -49,15 +65,6 @@ namespace task
                         log::info() << "Task tag: " << exp_task->tag();
                     }
 
-                    // TODO: make these variables configurable
-                    measurement_worker =
-                        std::make_unique<::firestarter::measurement::MeasurementWorker>(
-                            /*UpdateInterval=*/std::chrono::milliseconds(10), omp_get_num_threads(),
-                            /*MetricDylibsNames=*/std::vector<std::string>(),
-                            /*StdinMetricsNames=*/std::vector<std::string>());
-
-                    const auto metrics = measurement_worker->metricNames();
-                    measurement_worker->initMetrics(metrics);
                     measurement_worker->startMeasurement();
                 }
 
