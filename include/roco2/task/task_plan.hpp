@@ -4,6 +4,7 @@
 #include <firestarter/Measurement/MeasurementWorker.hpp>
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
+#include <roco2/metrics/storage.hpp>
 #include <roco2/task/experiment_task.hpp>
 #include <roco2/task/task.hpp>
 
@@ -29,6 +30,8 @@ namespace task
                         /*StdinMetricsNames=*/std::vector<std::string>());
 
                 const auto metrics = measurement_worker->metricNames();
+                roco2::metrics::storage::instance().add_metrics(metrics);
+
                 measurement_worker->initMetrics(metrics);
             }
         }
@@ -78,13 +81,9 @@ namespace task
                     const auto summary = measurement_worker->getValues(
                         std::chrono::milliseconds::zero(), std::chrono::milliseconds::zero());
 
-                    log::info() << "metric,num_timepoints,duration_ms,average,stddev";
-                    for (auto const& [name, sum] : summary)
-                    {
-                        log::info()
-                            << std::quoted(name) << "," << sum.NumTimepoints << ","
-                            << sum.Duration.count() << "," << sum.Average << "," << sum.Stddev;
-                    }
+                    roco2::metrics::storage::instance().save(summary);
+
+                    roco2::metrics::storage::instance().print_last();
                 }
             }
 
