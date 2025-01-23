@@ -18,16 +18,18 @@ namespace task
     class task_plan
     {
     public:
-        task_plan()
+        task_plan(std::chrono::milliseconds update_interval = std::chrono::milliseconds(10),
+                  const std::vector<std::string>& metric_dylib_names = std::vector<std::string>(),
+                  const std::vector<std::string>& stdin_metric_names = std::vector<std::string>())
         {
 #pragma omp master
             {
                 // TODO: make these variables configurable
                 measurement_worker =
                     std::make_unique<::firestarter::measurement::MeasurementWorker>(
-                        /*UpdateInterval=*/std::chrono::milliseconds(10), omp_get_num_threads(),
-                        /*MetricDylibsNames=*/std::vector<std::string>(),
-                        /*StdinMetricsNames=*/std::vector<std::string>());
+                        /*UpdateInterval=*/update_interval, omp_get_num_threads(),
+                        /*MetricDylibsNames=*/metric_dylib_names,
+                        /*StdinMetricsNames=*/stdin_metric_names);
 
                 const auto metrics = measurement_worker->metricNames();
                 roco2::metrics::storage::instance().add_metrics(metrics);
