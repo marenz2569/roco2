@@ -1,3 +1,6 @@
+#ifndef INCLUDE_ROCO2_METRICS_FIRESTARTER_METRICS_ADAPTER_HPP
+#define INCLUDE_ROCO2_METRICS_FIRESTARTER_METRICS_ADAPTER_HPP
+
 #include <firestarter/Measurement/MeasurementWorker.hpp>
 #include <firestarter/Measurement/Summary.hpp>
 
@@ -71,3 +74,5 @@ namespace metrics
     };
 } // namespace metrics
 } // namespace roco2
+
+#endif
