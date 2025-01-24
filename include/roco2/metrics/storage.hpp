@@ -50,8 +50,7 @@ namespace metrics
 
         static storage& instance()
         {
-            // gcc doesn't like omp threadprivate classes
-            static thread_local storage instance;
+            static storage instance;
             return instance;
         }
 

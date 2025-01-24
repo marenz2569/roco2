@@ -47,8 +47,7 @@ namespace metrics
 
         static firestarter_metrics_adapter& instance()
         {
-            // gcc doesn't like omp threadprivate classes
-            static thread_local firestarter_metrics_adapter instance;
+            static firestarter_metrics_adapter instance;
             return instance;
         }
 
