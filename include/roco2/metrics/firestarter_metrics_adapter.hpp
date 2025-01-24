@@ -27,7 +27,7 @@ namespace metrics
         {
             // TODO: make these variables configurable
             measurement_worker = std::make_unique<::firestarter::measurement::MeasurementWorker>(
-                /*UpdateInterval=*/update_interval, omp_get_max_threads(),
+                /*UpdateInterval=*/update_interval, /*NumThreads=*/1,
                 /*MetricDylibsNames=*/metric_dylib_names,
                 /*StdinMetricsNames=*/stdin_metric_names);
 
