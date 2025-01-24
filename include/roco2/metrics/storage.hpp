@@ -1,3 +1,6 @@
+#ifndef INCLUDE_ROCO2_METRICS_STORAGE_HPP
+#define INCLUDE_ROCO2_METRICS_STORAGE_HPP
+
 #include <firestarter/Measurement/Summary.hpp>
 
 #include "roco2/metrics/meta.hpp"
@@ -145,3 +148,5 @@ namespace metrics
     };
 } // namespace metrics
 } // namespace roco2
+
+#endif
