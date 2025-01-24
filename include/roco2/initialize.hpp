@@ -8,6 +8,7 @@
 #include <roco2/log.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/experiment.hpp>
+#include <roco2/metrics/firestarter_metrics_adapter.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
 // #include <roco2/scorep.hpp>
@@ -38,6 +39,10 @@ public:
         // variable there. So this must be called once, while only master is
         // active
         thread_local_memory();
+
+        // Enable the collection of metrics
+        auto& adapter = roco2::metrics::firestarter_metrics_adapter::instance();
+        (void)adapter;
 
 #ifdef ROCO2_ASSERTIONS
         log::warn() << "Additional runtime checks enabled.";
