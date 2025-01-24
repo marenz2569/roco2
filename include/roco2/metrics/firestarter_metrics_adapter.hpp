@@ -69,6 +69,7 @@ namespace metrics
                 const auto summary = measurement_worker->getValues(start_delta, stop_delta);
 
                 roco2::metrics::storage::instance().save(summary);
+                roco2::metrics::storage::instance().print_last();
             }
         }
     };

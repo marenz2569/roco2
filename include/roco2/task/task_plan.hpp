@@ -1,10 +1,8 @@
 #ifndef INCLUDE_ROCO2_TASK_TASK_PLAN_HPP
 #define INCLUDE_ROCO2_TASK_TASK_PLAN_HPP
 
-#include <firestarter/Measurement/MeasurementWorker.hpp>
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
-#include <roco2/metrics/storage.hpp>
 #include <roco2/task/experiment_task.hpp>
 #include <roco2/task/task.hpp>
 
@@ -55,11 +53,6 @@ namespace task
 
                 task->execute();
                 eta_ -= task->eta();
-
-#pragma omp master
-                {
-                    roco2::metrics::storage::instance().print_last();
-                }
             }
 
             executed_ = true;
