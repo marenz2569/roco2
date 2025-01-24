@@ -77,6 +77,8 @@ namespace metrics
                     auto metric_value = firestarter_metrics.at(metric_name).Average;
                     if (metric_name == "perf-freq")
                     {
+                        // firestarter metric collection does not cope with dynamic number of
+                        // threads yet.
                         entry.metric_values.emplace_back(
                             std::to_string(metric_value / meta::instance().threads));
                     }
