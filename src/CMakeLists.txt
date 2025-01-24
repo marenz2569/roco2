@@ -20,8 +20,11 @@ add_library(roco2_core STATIC ${roco2_core_SOURCES})
 
 target_link_libraries(roco2_core PUBLIC roco2 Nitro::env)
 
-target_link_libraries(roco2_core PUBLIC firestartercore)
-add_dependencies(roco2_core firestartercore)
+target_link_libraries(roco2_core PUBLIC
+    "-Wl,--whole-archive"
+    firestartercombined
+    "-Wl,--no-whole-archive"
+    )
 
 if (USE_SCOREP)
     option(ROCO2_HIGHLOW_INSTRUMENT_PHASES "instrument the individual high & low phases of the high-low-kernel" OFF)
