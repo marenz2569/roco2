@@ -73,7 +73,7 @@ public:
         if (!is_master)
         {
             roco2::metrics::experiment::instance().write(1);
-            roco2::metrics::threads::instance().write(omp_get_num_threads());
+            roco2::metrics::threads::instance().write(omp_get_max_threads());
         }
 
         log::debug() << "Checking affinity of thread to correct cpu";
