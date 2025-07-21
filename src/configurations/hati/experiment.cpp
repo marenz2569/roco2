@@ -56,14 +56,13 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
-    auto experiment_duration = std::chrono::milliseconds(10000);
+    auto experiment_duration = std::chrono::milliseconds(60000);
 
-    auto freq_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab frequency 3800" },
+    auto freq_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab frequency 800" },
                                                                    { 1, "elab frequency 2000" },
-                                                                   { 2, "elab frequency 800" } };
+                                                                   { 2, "elab frequency 3800" } };
 
-    auto on_list = sub_block_pattern(2, 112) >> block_pattern(2, false, triangle_shape::upper) >>
-                   stride_pattern(2, 112);
+    auto on_list = sub_block_on(/*socket=*/0, /*block_size=*/8);
 
     auto cstate_list =
         std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab cstate enable --only POLL" },
