@@ -19,9 +19,9 @@ namespace metrics
     private:
         firestarter_metrics_adapter(
             std::chrono::milliseconds update_interval = std::chrono::milliseconds(10),
-            std::chrono::milliseconds start_delta = std::chrono::milliseconds(100),
-            std::chrono::milliseconds stop_delta = std::chrono::milliseconds(100),
-            const std::vector<std::string>& metric_dylib_names = std::vector<std::string>(),
+            std::chrono::milliseconds start_delta = std::chrono::milliseconds(5000),
+            std::chrono::milliseconds stop_delta = std::chrono::milliseconds(5000),
+            const std::vector<std::string>& metric_dylib_names = std::vector<std::string>({"libmetric-metricq.so"}),
             const std::vector<std::string>& stdin_metric_names = std::vector<std::string>())
         : start_delta(start_delta), stop_delta(stop_delta)
         {
