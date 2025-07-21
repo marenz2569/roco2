@@ -55,26 +55,27 @@ namespace metrics
         }
 
         /// Register additional metrics in this storage
-        void add_metrics(const std::vector<std::string>& additional_metric_names)
+        void add_metrics(const std::set<::firestarter::MetricName>& additional_metric_names)
         {
             for (const auto& name : additional_metric_names)
             {
-                metric_names.emplace_back(name);
+                metric_names.emplace_back(name.toString());
             }
         }
 
         /// Save the metrics of firestarter and the internal metrics of roco2
         void
-        save(const std::map<std::string, ::firestarter::measurement::Summary>& firestarter_metrics)
+        save(const ::firestarter::measurement::MetricSummaries& firestarter_metrics)
         {
             storage_entry entry;
 
             for (const auto& metric_name : metric_names)
             {
-                auto is_in_firestarter_metrics = firestarter_metrics.count(metric_name);
+                const auto firestarter_metric_name = ::firestarter::MetricName::fromString(metric_name);	    
+                const auto is_in_firestarter_metrics = firestarter_metrics.count(firestarter_metric_name);
                 if (is_in_firestarter_metrics)
                 {
-                    auto metric_value = firestarter_metrics.at(metric_name).Average;
+                    const auto metric_value = firestarter_metrics.at(firestarter_metric_name).Average;
                     if (metric_name == "perf-freq")
                     {
                         // firestarter metric collection does not cope with dynamic number of
