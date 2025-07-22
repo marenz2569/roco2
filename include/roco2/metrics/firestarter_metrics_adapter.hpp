@@ -31,10 +31,10 @@ namespace metrics
                 /*MetricDylibsNames=*/metric_dylib_names,
                 /*StdinMetricsNames=*/stdin_metric_names);
 
-            const auto metrics = measurement_worker->metrics();
-            roco2::metrics::storage::instance().add_metrics(metrics);
 
-            measurement_worker->initMetrics(metrics);
+	    measurement_worker->initMetrics(measurement_worker->metrics());
+
+            roco2::metrics::storage::instance().add_metrics(measurement_worker->initializedMetrics());
         }
 
         std::unique_ptr<::firestarter::measurement::MeasurementWorker> measurement_worker;
