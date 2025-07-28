@@ -62,7 +62,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
                                                                    { 1, "elab frequency 2000" },
                                                                    { 2, "elab frequency 3800" } };
 
-    auto on_list = sub_block_on(/*socket=*/0, /*block_size=*/8);
+    auto on_list = sub_block_on(/*socket=*/0, /*block_size=*/14);
 
     auto cstate_list =
         std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab cstate enable --only POLL" },
