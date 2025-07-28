@@ -34,7 +34,7 @@ namespace metrics
 
 	    measurement_worker->initMetrics(measurement_worker->metrics());
 
-            roco2::metrics::storage::instance().add_metrics(measurement_worker->initializedMetrics());
+            roco2::metrics::storage::instance().add_metrics(measurement_worker->metrics());
         }
 
         std::unique_ptr<::firestarter::measurement::MeasurementWorker> measurement_worker;
