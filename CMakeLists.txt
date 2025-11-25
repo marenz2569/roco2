@@ -70,6 +70,8 @@ else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
 
+# Allow the use of external metrics for firestarter
+set(FIRESTARTER_LINK_STATIC OFF)
 add_subdirectory(lib/FIRESTARTER)
 
 target_include_directories(roco2 INTERFACE include)

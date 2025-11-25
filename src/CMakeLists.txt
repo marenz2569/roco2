@@ -18,10 +18,11 @@ list(APPEND roco2_core_SOURCES firestarter_kernel.cpp)
 
 add_library(roco2_core STATIC ${roco2_core_SOURCES})
 
-target_link_libraries(roco2_core PUBLIC roco2 Nitro::env)
+target_link_libraries(roco2_core PUBLIC roco2 Nitro::env Nitro::options)
 
-target_link_libraries(roco2_core PUBLIC firestartercore firestarterlinux)
-add_dependencies(roco2_core firestartercore firestarterlinux)
+target_link_libraries(roco2_core PUBLIC
+    firestartercore
+    )
 
 if (USE_SCOREP)
     option(ROCO2_HIGHLOW_INSTRUMENT_PHASES "instrument the individual high & low phases of the high-low-kernel" OFF)
