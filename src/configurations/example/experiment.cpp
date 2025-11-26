@@ -36,7 +36,8 @@
 
 using namespace roco2::experiments::patterns;
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path)
 {
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
@@ -86,9 +87,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     // make sure ddcm is disabled
     ddcm.disable();
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task(exp, kernel, on));
-    };
+    auto experiment = [&](auto& kernel, const auto& on)
+    { plan.push_back(roco2::task::experiment_task(exp, kernel, on)); };
 
     auto setting = [&](auto lambda) { plan.push_back(roco2::task::make_lambda_task(lambda)); };
 
@@ -123,7 +123,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         }
     }
 
-// ------ EDIT TASK PLAN ABOVE THIS LINE ------
+    // ------ EDIT TASK PLAN ABOVE THIS LINE ------
 
 #pragma omp master
     {
@@ -136,5 +136,11 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 #pragma omp barrier
 
         plan.execute();
+    }
+
+#pragma omp barrier
+#pragma omp master
+    {
+        plan.save_csv(csv_output_path);
     }
 }

@@ -8,6 +8,7 @@
 #include <roco2/log.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/experiment.hpp>
+#include <roco2/metrics/firestarter_metrics_adapter.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
 // #include <roco2/scorep.hpp>
@@ -39,6 +40,10 @@ public:
         // active
         thread_local_memory();
 
+        // Enable the collection of metrics
+        auto& adapter = roco2::metrics::firestarter_metrics_adapter::instance();
+        (void)adapter;
+
 #ifdef ROCO2_ASSERTIONS
         log::warn() << "Additional runtime checks enabled.";
         log::warn() << "This may influence or corrupt your measurement.";
@@ -68,7 +73,7 @@ public:
         if (!is_master)
         {
             roco2::metrics::experiment::instance().write(1);
-            roco2::metrics::threads::instance().write(omp_get_num_threads());
+            roco2::metrics::threads::instance().write(omp_get_max_threads());
         }
 
         log::debug() << "Checking affinity of thread to correct cpu";

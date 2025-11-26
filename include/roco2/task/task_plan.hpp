@@ -3,6 +3,7 @@
 
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
+#include <roco2/task/experiment_task.hpp>
 #include <roco2/task/task.hpp>
 
 #include <memory>
@@ -15,6 +16,8 @@ namespace task
     class task_plan
     {
     public:
+        task_plan() = default;
+
         roco2::chrono::duration eta() const
         {
             return eta_;
@@ -36,10 +39,16 @@ namespace task
         {
             for (auto& task : tasks_)
             {
+#pragma omp barrier
 #pragma omp master
                 {
                     log::info() << "ETA: "
                                 << std::chrono::duration_cast<std::chrono::seconds>(eta_);
+
+                    if (auto* exp_task = dynamic_cast<roco2::task::experiment_task*>(task.get()))
+                    {
+                        log::info() << "Task tag: " << exp_task->tag();
+                    }
                 }
 
                 task->execute();
@@ -49,12 +58,17 @@ namespace task
             executed_ = true;
         }
 
+        void save_csv(const std::string& outpath) const
+        {
+            roco2::metrics::storage::instance().save_csv(outpath);
+        }
+
     private:
         bool executed_ = false;
         std::vector<std::unique_ptr<task>> tasks_;
         roco2::chrono::duration eta_ = roco2::chrono::duration(0);
     };
-}
-}
+} // namespace task
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_TASK_TASK_HPP

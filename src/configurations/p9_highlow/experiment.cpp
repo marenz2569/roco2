@@ -17,14 +17,14 @@
 #include <roco2/task/lambda_task.hpp>
 #include <roco2/task/task_plan.hpp>
 
-#include <string>
-#include <sstream>
-#include <vector>
 #include <chrono>
-#include <ratio>
 #include <iostream>
+#include <ratio>
 #include <regex>
+#include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 using namespace roco2::experiments::patterns;
 using namespace std::chrono_literals;
@@ -40,12 +40,14 @@ using namespace std::chrono_literals;
  * @param freq_spec "0.5,1991-1993,1000+-5"
  * @return [0.5, 1991, 1992, 1993, 995, 996, 997, 998, 999, 1000, 1001, 1002, 1003, 1004, 1005]
  */
-std::vector<double> get_frequencies(const std::string& freq_spec) {
+std::vector<double> get_frequencies(const std::string& freq_spec)
+{
     std::vector<double> freqs;
 
     // split on ','
     std::stringstream freq_spec_stream(freq_spec);
-    for (std::string spec_item; std::getline(freq_spec_stream, spec_item, ',');) {
+    for (std::string spec_item; std::getline(freq_spec_stream, spec_item, ',');)
+    {
         // spaces are not trimmed -> include in regex
         std::regex re_empty("\\s*");
         std::regex re_only_freq("\\s*([0-9]+(?:[.][0-9]+)?)\\s*");
@@ -53,23 +55,34 @@ std::vector<double> get_frequencies(const std::string& freq_spec) {
         std::regex re_freq_plusminus("\\s*([0-9]+)[+]-([0-9]+)\\s*");
 
         std::smatch m;
-        if (std::regex_match(spec_item, m, re_empty)) {
+        if (std::regex_match(spec_item, m, re_empty))
+        {
             // empty -> nop
-        } else if (std::regex_match(spec_item, m, re_only_freq)) {
+        }
+        else if (std::regex_match(spec_item, m, re_only_freq))
+        {
             freqs.push_back(std::stod(m[1]));
-        } else if (std::regex_match(spec_item, m, re_freq_range)) {
+        }
+        else if (std::regex_match(spec_item, m, re_freq_range))
+        {
             int freq_lower = stoi(m[1]);
             int freq_upper = stoi(m[2]);
-            for (int freq = freq_lower; freq <= freq_upper; freq++) {
+            for (int freq = freq_lower; freq <= freq_upper; freq++)
+            {
                 freqs.push_back(freq);
             }
-        } else if (std::regex_match(spec_item, m, re_freq_plusminus)) {
+        }
+        else if (std::regex_match(spec_item, m, re_freq_plusminus))
+        {
             int freq_base = stoi(m[1]);
             int variation = stoi(m[2]);
-            for (int freq = freq_base - variation; freq <= (freq_base + variation); freq++) {
+            for (int freq = freq_base - variation; freq <= (freq_base + variation); freq++)
+            {
                 freqs.push_back(freq);
             }
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("invalid freq spec, could not parse item: " + spec_item);
         }
     }
@@ -77,16 +90,18 @@ std::vector<double> get_frequencies(const std::string& freq_spec) {
     return freqs;
 }
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
+                     const std::string& csv_output_path)
 {
     std::vector<roco2::kernels::high_low_bs> kernels;
 
-    for (double freq_hz : get_frequencies(P9_HIGHLOW_FREQS)) {
+    for (double freq_hz : get_frequencies(P9_HIGHLOW_FREQS))
+    {
         std::chrono::duration<double> period_length = std::chrono::seconds(1) / freq_hz;
         kernels.push_back(roco2::kernels::high_low_bs(period_length / 2, period_length / 2));
     }
 
-    roco2::memory::numa_bind_local nbl; 
+    roco2::memory::numa_bind_local nbl;
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
@@ -110,15 +125,16 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     roco2::experiments::const_lenght exp(experiment_startpoint, experiment_duration);
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task(exp, kernel, on));
-    };
+    auto experiment = [&](auto& kernel, const auto& on)
+    { plan.push_back(roco2::task::experiment_task(exp, kernel, on)); };
 
     // ------ EDIT TASK PLAN BELOW THIS LINE ------
 
-    for (const auto& on : on_list) {
+    for (const auto& on : on_list)
+    {
         // note: const kernels are not accepted by compiler
-        for (auto& k : kernels) {
+        for (auto& k : kernels)
+        {
             experiment(k, on);
         }
     }
@@ -136,5 +152,11 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 #pragma omp barrier
 
         plan.execute();
+    }
+
+#pragma omp barrier
+#pragma omp master
+    {
+        plan.save_csv(csv_output_path);
     }
 }

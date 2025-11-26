@@ -5,6 +5,7 @@
 #include <roco2/cpu/info.hpp>
 #include <roco2/experiments/cpu_sets/cpu_set.hpp>
 #include <roco2/metrics/experiment.hpp>
+#include <roco2/metrics/firestarter_metrics_adapter.hpp>
 #include <roco2/metrics/metric_guard.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
@@ -29,6 +30,8 @@ namespace kernels
         {
             roco2::metrics::threads::instance().write(on.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
+            roco2::metrics::firestarter_metrics_adapter::instance().start_measurement();
+
             if (on.contains(roco2::cpu::info::current_thread()))
             {
 
@@ -43,6 +46,8 @@ namespace kernels
 
                 roco2::metrics::utility::instance().write(1);
             }
+
+            roco2::metrics::firestarter_metrics_adapter::instance().finish_measurement();
         }
 
         virtual experiment_tag tag() const = 0;
