@@ -7,7 +7,6 @@
 #include "roco2/metrics/storage.hpp"
 
 #include <string>
-#include <vector>
 
 namespace roco2
 {
@@ -21,18 +20,20 @@ namespace metrics
             std::chrono::milliseconds update_interval = std::chrono::milliseconds(10),
             std::chrono::milliseconds start_delta = std::chrono::milliseconds(5000),
             std::chrono::milliseconds stop_delta = std::chrono::milliseconds(5000),
-            const std::set<std::string>& metric_dylib_names = std::set<std::string>({"libmetric-metricq.so"}),
+            const std::set<std::string>& metric_dylib_names =
+                std::set<std::string>({ "libmetric-metricq.so" }),
             const std::set<std::string>& stdin_metric_names = std::set<std::string>())
         : start_delta(start_delta), stop_delta(stop_delta)
         {
-            // TODO: make these variables configurable
             measurement_worker = std::make_unique<::firestarter::measurement::MeasurementWorker>(
                 /*UpdateInterval=*/update_interval, /*NumThreads=*/1,
                 /*MetricDylibsNames=*/metric_dylib_names,
                 /*StdinMetricsNames=*/stdin_metric_names);
 
+            const auto metrics = measurement_worker->metrics();
+            roco2::metrics::storage::instance().add_metrics(metrics);
 
-	    measurement_worker->initMetrics(measurement_worker->metrics());
+            measurement_worker->initMetrics(measurement_worker->metrics());
 
             roco2::metrics::storage::instance().add_metrics(measurement_worker->metrics());
         }

@@ -1,11 +1,15 @@
 #ifndef INCLUDE_ROCO2_METRICS_STORAGE_HPP
 #define INCLUDE_ROCO2_METRICS_STORAGE_HPP
 
+#include <firestarter/Config/MetricName.hpp>
+#include <firestarter/Measurement/Metric.hpp>
 #include <firestarter/Measurement/Summary.hpp>
 
 #include "roco2/metrics/meta.hpp"
 
 #include <fstream>
+#include <map>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -64,18 +68,17 @@ namespace metrics
         }
 
         /// Save the metrics of firestarter and the internal metrics of roco2
-        void
-        save(const ::firestarter::measurement::MetricSummaries& firestarter_metrics)
+        void save(const ::firestarter::measurement::MetricSummaries& firestarter_metrics)
         {
             storage_entry entry;
 
             for (const auto& metric_name : metric_names)
             {
-                const auto firestarter_metric_name = ::firestarter::MetricName::fromString(metric_name);	    
-                const auto is_in_firestarter_metrics = firestarter_metrics.count(firestarter_metric_name);
-                if (is_in_firestarter_metrics)
+                const auto firestarter_metric_name =
+                    ::firestarter::MetricName::fromString(metric_name);
+                if (firestarter_metrics.count(firestarter_metric_name))
                 {
-                    const auto metric_value = firestarter_metrics.at(firestarter_metric_name).Average;
+                    auto metric_value = firestarter_metrics.at(firestarter_metric_name).Average;
                     if (metric_name == "perf-freq")
                     {
                         // firestarter metric collection does not cope with dynamic number of
