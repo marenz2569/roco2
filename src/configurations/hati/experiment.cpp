@@ -57,7 +57,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
     // The duration of each measurement in ms
-    auto experiment_duration_ms = 0;
+    auto experiment_duration = std::chrono::milliseconds(0);
 
     // No other functions are setting environment variables
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
@@ -67,7 +67,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
             std::string(env_string) + " is not a valid value for ROCO2_DURATION_MS.";
         try
         {
-            experiment_duration = std::chrono::milliseconds(std::stoi(env_string))
+            experiment_duration = std::chrono::milliseconds(std::stoi(env_string));
         }
         catch (const std::invalid_argument&)
         {
