@@ -56,7 +56,28 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
-    auto experiment_duration = std::chrono::milliseconds(60000);
+    // The duration of each measurement in ms
+    auto experiment_duration_ms = 0;
+
+    // No other functions are setting environment variables
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    if (const char* duration_ms = std::getenv("ROCO2_DURATION_MS"))
+    {
+        auto error_string =
+            std::string(duration_ms) + " is not a valid value for ROCO2_DURATION_MS.";
+        try
+        {
+            experiment_duration = std::chrono::milliseconds(std::stoi(duration_ms))
+        }
+        catch (const std::invalid_argument&)
+        {
+            throw std::runtime_error(error_string);
+        }
+        catch (const std::out_of_range&)
+        {
+            throw std::runtime_error(error_string);
+        }
+    }
 
     auto freq_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab frequency 800" },
                                                                    { 1, "elab frequency 1400" },
