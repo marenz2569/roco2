@@ -61,13 +61,13 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
 
     // No other functions are setting environment variables
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
-    if (const char* duration_ms = std::getenv("ROCO2_DURATION_MS"))
+    if (const char* env_string = std::getenv("ROCO2_DURATION_MS"))
     {
         auto error_string =
-            std::string(duration_ms) + " is not a valid value for ROCO2_DURATION_MS.";
+            std::string(env_string) + " is not a valid value for ROCO2_DURATION_MS.";
         try
         {
-            experiment_duration = std::chrono::milliseconds(std::stoi(duration_ms))
+            experiment_duration = std::chrono::milliseconds(std::stoi(env_string))
         }
         catch (const std::invalid_argument&)
         {
@@ -79,12 +79,35 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only,
         }
     }
 
+    // The number of core in on quadrant of the processor
+    auto quadrant_size = 0;
+
+    // No other functions are setting environment variables
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    if (const char* env_string = std::getenv("ROCO2_CORES_PER_QUADRANT"))
+    {
+        auto error_string =
+            std::string(env_string) + " is not a valid value for ROCO2_CORES_PER_QUADRANT.";
+        try
+        {
+            quadrant_size = std::stoi(env_string);
+        }
+        catch (const std::invalid_argument&)
+        {
+            throw std::runtime_error(error_string);
+        }
+        catch (const std::out_of_range&)
+        {
+            throw std::runtime_error(error_string);
+        }
+    }
+
+    auto on_list = sub_block_on(/*socket=*/0, /*block_size=*/quadrant_size);
+
     auto freq_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab frequency 800" },
                                                                    { 1, "elab frequency 1400" },
                                                                    { 2, "elab frequency 2000" },
                                                                    { 3, "elab frequency 3800" } };
-
-    auto on_list = sub_block_on(/*socket=*/0, /*block_size=*/14);
 
     auto cstate_list =
         std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab cstate enable --only POLL" },
